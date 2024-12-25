@@ -28,6 +28,8 @@
 #include "userprog/gdt.h"
 #include "userprog/syscall.h"
 #include "userprog/tss.h"
+#include "vm/frametable.h"
+#include "vm/swap.h"
 #else
 #include "tests/threads/tests.h"
 #endif
@@ -37,8 +39,7 @@
 #include "filesys/filesys.h"
 #include "filesys/fsutil.h"
 #endif
-#include "vm/frame.h"
-#include "vm/swap.h"
+
 
 /* Page directory with kernel mappings only. */
 uint32_t *init_page_dir;
@@ -100,7 +101,7 @@ main (void)
   palloc_init (user_page_limit);
   malloc_init ();
   paging_init ();
-
+  printf("Adding something");
   /* Segmentation. */
 #ifdef USERPROG
   tss_init ();
@@ -115,6 +116,7 @@ main (void)
 #ifdef USERPROG
   exception_init ();
   syscall_init ();
+  frametable_init ();
 #endif
 
   /* Start thread scheduler and enable interrupts. */
@@ -129,8 +131,9 @@ main (void)
   filesys_init (format_filesys);
 #endif
 
-  frame_init ();
+#ifdef USERPROG
   swap_init ();
+#endif
 
   printf ("Boot complete.\n");
   
